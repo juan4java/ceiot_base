@@ -19,9 +19,17 @@ class Main implements EventListenerObject, GETResponseListener {
     this.view.showDevices(this.devices,this);
   }
 
+
+  handlePOSTResponse(status:number, response:string):void {
+    console.log(response)
+    // this.devices= JSON.parse(response);
+    // this.view.showDevices(this.devices,this);
+  }
+
   main():void {
       this.apiGetDevice()
       document.getElementById("boton").addEventListener("click",this);
+      document.getElementById("boton-edit").addEventListener("click",this);
   }
 
   handleEvent(evt:Event):void{
@@ -32,12 +40,22 @@ class Main implements EventListenerObject, GETResponseListener {
     if (target.id=="boton") {
       this.apiGetDevice()
       console.log("handling boton");
+    } else if (target.id=="boton-edit") {
+       this.apiDeleteDevice()
+      console.log("handling boton-edit boton");
+    } else {
+      console.log("NO handling edit boton", target.id);  
     }
    
   }
 
   private apiGetDevice(){
     this.api.requestGET("device",this);
+  }
+
+  private apiDeleteDevice(){
+    var response = this.api.requestPOST("/web/device/00",this);
+    alert("Se intento eliminar : " + response)
   }
 }
 
