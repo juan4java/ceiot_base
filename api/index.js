@@ -89,6 +89,21 @@ app.post('/web/device/:id', function(req,res){
     }    
 });
 
+app.post('/device', urlencodedParser, function(req,res){
+    let id = req.body.id;
+    let name = req.body.n;
+    let key = req.body.k;
+
+    insertDevice(id,name, key)
+    response = {  
+        id:id,  
+        name:name,
+        key:key
+    };  
+    res.end(JSON.stringify(response)); 
+});
+
+
 /**
  * UPDATE/CREATE DEVICE
  */
@@ -162,10 +177,10 @@ app.post('/measurement', function (req, res) {
                     // Elimino el valor usado
                     timeArray.splice(timeArray.indexOf(req.body.time), 1);
                     console.log("measure added");
-                    res.send("received measurement into " +  insertedId);   
+                    res.send("added measurement into " +  insertedId);   
                 } else {
                     console.log("No registered device");
-                    res.send("not registered device key " ); 
+                    res.send("not addede measeure because not registered device key " ); 
                 }   
             }
         }    
