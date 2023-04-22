@@ -14,7 +14,7 @@ const { isNumberObject } = require("util/types");
 // Measurements database setup and access
 
 let database = null;
-const collectionName = "measurements";
+const collectionName = "measurements3";
 
 async function startDatabase() {
     const uri = "mongodb://localhost:27017/?maxPoolSize=20&w=majority";	
@@ -79,10 +79,10 @@ app.get('/time', function(req, res){
  */
 app.post('/web/device/:id', function(req,res){
     console.log("device id : " + req.params.id );
-    var device = db.public.many("SELECT * FROM devices WHERE device_id = '"+req.body.id+"'");
+    var device = db.public.many("SELECT * FROM devices WHERE device_id = '"+req.params.id+"'");
     console.log("registros obtenidos : " + device.length);
     if(device.length == 0){
-        res.send("Device not found" + req.body.id);      
+        res.send("Device not found" + req.params.id);      
     } else {
         db.public.none("DELETE FROM devices WHERE device_id = '"+req.params.id+ "'");
         res.send("Device deleted");      
@@ -118,8 +118,8 @@ app.post('/web/device', urlencodedParser, function(req,res){
     };  
     
 	console.log("POST device " + JSON.stringify(req.body));    
-    let isNumber = isValidDeviceId(id);
-    if(isNumber){
+    let isValid = isValidDeviceId(id);
+    if(isValid){
         
         //var device = db.public.many("SELECT * FROM devices WHERE device_id = '"+id+"'");
         var device = db.public.many("SELECT * FROM devices WHERE device_id = '"+req.body.id+"'");
@@ -137,7 +137,7 @@ app.post('/web/device', urlencodedParser, function(req,res){
         }
         
     } else {
-        res.end(JSON.stringify('id must be a number')); 
+        res.end(JSON.stringify('id must be a number or mac address')); 
     }
 });
 
@@ -172,14 +172,14 @@ app.post('/measurement', function (req, res) {
                 //AUTH, si coinciden las keys se permite el guardado
                 if ( device.key==key){
                     const {insertedId} = insertMeasurement(
-                        {id:id, t:req.body.t, h:req.body.h, time:time, e:req.body.err});
+                        {id:id, t:req.body.t, h:req.body.h, time:time, e:req.body.err,localTime: Date.now()});
                 
                     // Elimino el valor usado
                     timeArray.splice(timeArray.indexOf(req.body.time), 1);
-                    console.log("measure added");
+                    console.log("added measurement into " +  insertedId);
                     res.send("added measurement into " +  insertedId);   
                 } else {
-                    console.log("No registered device");
+                    console.log("not addede measeure because not registered device key ");
                     res.send("not addede measeure because not registered device key " ); 
                 }   
             }
@@ -395,18 +395,12 @@ startDatabase().then(async() => {
 
 
 function getDevice(id) {
-    var isNumber = isValidNumber(id);
-    if(isNumber){ 
-        var device = db.public.one("SELECT * FROM devices WHERE device_id = '"+id+"'");
-        //console.log(device);
-        return device;
-    } else if(isMacAdd(id)){
+    var isValid = isValidDeviceId(id);
+    if(isValid){ 
         var device = db.public.one("SELECT * FROM devices WHERE device_id = '"+id+"'");
         console.log(device);
         return device;
-    }
-
-
+    } 
     return "";
 }
 
@@ -424,12 +418,6 @@ function isValidNumber(value) {
     var pattern = /^\d+\.?\d*$/;
     let result =  pattern.test(value);
     console.log(" se valida que es numero :" + result )
-    
-    /*
-    result  = typeof result==='number';
-    console.log(" se valida que es numero :" + result )
-    */
-
     return result;
 }
 
@@ -437,12 +425,6 @@ function isMacAdd(value) {
     var pattern = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
     let result =  pattern.test(value);
     console.log(" es una mac :" + result )
-    
-    /*
-    result  = typeof result==='number';
-    console.log(" se valida que es numero :" + result )
-    */
-
     return result;
 }
 
