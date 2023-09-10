@@ -17,7 +17,7 @@ Objetivo del ataque
 Perfil de la victima:
 - Personas adineradas con una vida constituida pero corrompibles.
 - Poseen competidores o adversarios que buscan tomar ventaja de la perdida de credibilidad y reputacion.
-- El ataque dara acceso a informacion de la victima, pero puede ser llevado a cabo con la colaboracion de otros, ejemplo parte de su familia con acceso al sistema de camaras.
+- El ataque dara acceso a informacion de la victima, pero puede ser llevado a cabo con la "colaboracion" de otros, ejemplo parte de su familia podria contar acceso al sistema de camaras.
 
 Algunas consideraciones: 
 * Denegacion de servicios con finalidad de evitar que el sistema opere y dar inicio
